@@ -57,9 +57,10 @@ struct Traveler {
     Grid gd {};
     IntCode ic;
     Traveler(const std::vector<val_t>& i) : ic(i) {}
+    //find first undiscovered square
     path_t floodFill() {
         std::vector<Coord> nodes {pos};
-        std::map<Coord, dir> seen; //dir is the dir to the seen square
+        std::map<Coord, dir> seen {}; //dir is the dir to the seen square
         while (true) {
             std::vector<Coord> newNodes = {};
             for (auto& node : nodes) {
@@ -68,6 +69,7 @@ struct Traveler {
                     if (!seen.contains(c)) {
                         seen.insert({c, d});
                         if (gd.at(c) == tile::undiscovered) {
+                            //get path back to start
                             Coord cur = c;
                             dir d;
                             path_t path {};
@@ -75,7 +77,6 @@ struct Traveler {
                                 d = seen[cur];
                                 path.push_back(d); 
                                 cur = cur - cardinals[d];
-                                
                             } while (cur != pos);
                             return path;
                         }
@@ -102,6 +103,7 @@ struct Traveler {
     int run() {
         while (true) {
             if (investigate(floodFill()) == tile::goal) {
+                //TODO find actual distance
                 return (abs(pos.x) + abs(pos.y));
             }
         }
